@@ -1,7 +1,10 @@
 package com.aathithiyan.spring_demo.service;
 
+import com.aathithiyan.spring_demo.model.Student;
 import com.aathithiyan.spring_demo.repository.StudentRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class StudentService {
@@ -12,8 +15,29 @@ public class StudentService {
         this.studentRepository = studentRepository;
     }
 
-    public String getStudent() {
+    public List<Student> getAllStudents() {
+        return studentRepository.getAllStudents();
+    }
 
-        return studentRepository.getStudent();
+    public Student getStudentById(int id) {
+
+        return studentRepository.getStudentById(id);
+    }
+
+    public Student addStudent(Student student) {
+        return studentRepository.addStudent(student);
+    }
+
+    public Student updateStudent(int id, Student student) {
+
+        return studentRepository.updateStudent(id, student);
+    }
+    public Student patchStudent(int id, Student student) {
+
+        return studentRepository.patchStudent(id, student);
+    }
+    public boolean deleteStudent(int id) {
+
+        return studentRepository.deleteStudent(id);
     }
 }
