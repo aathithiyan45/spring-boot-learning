@@ -1,40 +1,33 @@
 package com.aathithiyan.spring_demo.service;
 
 import com.aathithiyan.spring_demo.model.Employee;
+import com.aathithiyan.spring_demo.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
 public class EmployeeService {
 
-    private final List<Employee> employees = new ArrayList<>();
+    private final EmployeeRepository employeeRepository;
 
-    private int nextId = 1;
+    public EmployeeService(EmployeeRepository employeeRepository) {
+        this.employeeRepository = employeeRepository;
+    }
 
     // Create Employee
     public Employee createEmployee(Employee employee) {
-        employee.setId(nextId++);
-        employees.add(employee);
-        return employee;
+        return employeeRepository.save(employee);
     }
 
     // Get All Employees
     public List<Employee> getAllEmployees() {
-        return employees;
+        return employeeRepository.findAll();
     }
 
     // Get Employee By ID
     public Employee getEmployeeById(int id) {
-
-        for (Employee employee : employees) {
-            if (employee.getId() == id) {
-                return employee;
-            }
-        }
-
-        return null;
+        return employeeRepository.findById(id).orElse(null);
     }
 
     // Update Employee
@@ -51,19 +44,17 @@ public class EmployeeService {
         existingEmployee.setDepartment(updatedEmployee.getDepartment());
         existingEmployee.setSalary(updatedEmployee.getSalary());
 
-        return existingEmployee;
+        return employeeRepository.save(existingEmployee);
     }
 
     // Delete Employee
     public boolean deleteEmployee(int id) {
 
-        Employee employee = getEmployeeById(id);
-
-        if (employee == null) {
+        if (!employeeRepository.existsById(id)) {
             return false;
         }
 
-        employees.remove(employee);
+        employeeRepository.deleteById(id);
         return true;
     }
 }

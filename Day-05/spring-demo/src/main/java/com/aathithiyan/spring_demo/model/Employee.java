@@ -1,18 +1,26 @@
 package com.aathithiyan.spring_demo.model;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
+@Entity
 public class Employee {
 
-    private int id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     private String name;
     private String email;
     private String department;
     private double salary;
 
-
     public Employee() {
     }
 
-    public Employee(int id, String name, String email , String department , double salary) {
+    public Employee(Integer id, String name, String email, String department, double salary) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -20,11 +28,11 @@ public class Employee {
         this.salary = salary;
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -39,7 +47,8 @@ public class Employee {
     public String getEmail() {
         return email;
     }
-    public void setEmail(String email){
+
+    public void setEmail(String email) {
         this.email = email;
     }
 
@@ -47,7 +56,7 @@ public class Employee {
         return department;
     }
 
-    public void setDepartment(String department){
+    public void setDepartment(String department) {
         this.department = department;
     }
 
