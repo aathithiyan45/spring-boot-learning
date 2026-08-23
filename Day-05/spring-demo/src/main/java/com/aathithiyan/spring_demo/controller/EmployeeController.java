@@ -83,4 +83,31 @@ public class EmployeeController {
 
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Employee> getEmployeeByEmail(
+            @PathVariable String email) {
+
+        Employee employee = employeeService.getEmployeeByEmail(email);
+
+        if (employee == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(employee);
+    }
+
+    @GetMapping("/department/{department}")
+    public List<Employee> getEmployeesByDepartment(
+            @PathVariable String department) {
+
+        return employeeService.getEmployeesByDepartment(department);
+    }
+
+    @GetMapping("/salary/greater-than/{salary}")
+    public List<Employee> getEmployeesBySalaryGreaterThan(
+            @PathVariable double salary) {
+
+        return employeeService.getEmployeesBySalaryGreaterThan(salary);
+    }
 }

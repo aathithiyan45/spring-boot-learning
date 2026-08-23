@@ -1,10 +1,9 @@
 package com.aathithiyan.spring_demo.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
+
+import java.util.List;
+import java.util.Optional;
 
 @Entity
 public class Employee {
@@ -70,4 +69,5 @@ public class Employee {
     public void setSalary(double salary) {
         this.salary = salary;
     }
+
 }

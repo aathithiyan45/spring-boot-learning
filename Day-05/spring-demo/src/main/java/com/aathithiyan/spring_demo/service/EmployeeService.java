@@ -57,4 +57,15 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
         return true;
     }
+    public Employee getEmployeeByEmail(String email) {
+        return employeeRepository.findByEmail(email).orElse(null);
+    }
+
+    public List<Employee> getEmployeesByDepartment(String department) {
+        return employeeRepository.findByDepartment(department);
+    }
+
+    public List<Employee> getEmployeesBySalaryGreaterThan(double salary) {
+        return employeeRepository.findBySalaryGreaterThan(salary);
+    }
 }
