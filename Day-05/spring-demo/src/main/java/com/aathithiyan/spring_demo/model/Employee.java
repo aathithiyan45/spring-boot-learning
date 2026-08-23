@@ -2,27 +2,30 @@ package com.aathithiyan.spring_demo.model;
 
 import jakarta.persistence.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @Entity
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
+
     @Column(nullable = false)
     private String name;
 
     @Column(unique = true)
     private String email;
-    private String department;
+
     private double salary;
+
+    @ManyToOne
+    @JoinColumn(name = "department_id")
+    private Department department;
 
     public Employee() {
     }
 
-    public Employee(Integer id, String name, String email, String department, double salary) {
+    public Employee(Integer id, String name, String email,
+                    Department department, double salary) {
         this.id = id;
         this.name = name;
         this.email = email;
@@ -54,11 +57,11 @@ public class Employee {
         this.email = email;
     }
 
-    public String getDepartment() {
+    public Department getDepartment() {
         return department;
     }
 
-    public void setDepartment(String department) {
+    public void setDepartment(Department department) {
         this.department = department;
     }
 
@@ -69,5 +72,4 @@ public class Employee {
     public void setSalary(double salary) {
         this.salary = salary;
     }
-
 }
