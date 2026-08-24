@@ -1,10 +1,15 @@
 package com.aathithiyan.spring_demo.service;
 
+import com.aathithiyan.spring_demo.dto.EmployeeRequestDTO;
+import com.aathithiyan.spring_demo.dto.EmployeeResponseDTO;
+import com.aathithiyan.spring_demo.model.Department;
 import com.aathithiyan.spring_demo.model.Employee;
+import com.aathithiyan.spring_demo.repository.DepartmentRepository;
 import com.aathithiyan.spring_demo.repository.EmployeeRepository;
-import org.springframework.stereotype.Service;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
@@ -12,44 +17,145 @@ import java.util.List;
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public EmployeeService(EmployeeRepository employeeRepository) {
+    public EmployeeService(
+            EmployeeRepository employeeRepository,
+            DepartmentRepository departmentRepository) {
+
         this.employeeRepository = employeeRepository;
+        this.departmentRepository = departmentRepository;
     }
 
+    // =========================
+    // ENTITY → RESPONSE DTO
+    // =========================
+
+    private EmployeeResponseDTO convertToResponseDTO(
+            Employee employee) {
+
+        return new EmployeeResponseDTO(
+                employee.getId(),
+                employee.getName(),
+                employee.getEmail(),
+                employee.getSalary(),
+                employee.getDepartment().getName()
+        );
+    }
+
+    // =========================
+    // DTO → ENTITY
+    // =========================
+
+    private Employee convertToEntity(
+            EmployeeRequestDTO dto) {
+
+        Department department =
+                departmentRepository.findById(
+                        dto.getDepartmentId()
+                ).orElseThrow(() ->
+                        new RuntimeException(
+                                "Department not found"
+                        ));
+
+        Employee employee = new Employee();
+
+        employee.setName(dto.getName());
+        employee.setEmail(dto.getEmail());
+        employee.setSalary(dto.getSalary());
+        employee.setDepartment(department);
+
+        return employee;
+    }
+
+    // =========================
     // CREATE
-    public Employee createEmployee(Employee employee) {
-        return employeeRepository.save(employee);
+    // DTO → Entity → DB
+    // Entity → Response DTO
+    // =========================
+
+    public EmployeeResponseDTO createEmployee(
+            EmployeeRequestDTO dto) {
+
+        Employee employee = convertToEntity(dto);
+
+        Employee savedEmployee =
+                employeeRepository.save(employee);
+
+        return convertToResponseDTO(savedEmployee);
     }
 
+    // =========================
     // GET ALL
-    public List<Employee> getAllEmployees() {
-        return employeeRepository.findAll();
+    // Entity → DTO
+    // =========================
+
+    public List<EmployeeResponseDTO> getAllEmployees() {
+
+        return employeeRepository.findAll()
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
+    // =========================
     // GET BY ID
-    public Employee getEmployeeById(int id) {
-        return employeeRepository.findById(id).orElse(null);
+    // Entity → DTO
+    // =========================
+
+    public EmployeeResponseDTO getEmployeeById(int id) {
+
+        Employee employee =
+                employeeRepository.findById(id)
+                        .orElse(null);
+
+        if (employee == null) {
+            return null;
+        }
+
+        return convertToResponseDTO(employee);
     }
 
+    // =========================
     // UPDATE
-    public Employee updateEmployee(int id, Employee updatedEmployee) {
+    // DTO → Entity
+    // =========================
 
-        Employee existingEmployee = getEmployeeById(id);
+    public EmployeeResponseDTO updateEmployee(
+            int id,
+            EmployeeRequestDTO dto) {
+
+        Employee existingEmployee =
+                employeeRepository.findById(id)
+                        .orElse(null);
 
         if (existingEmployee == null) {
             return null;
         }
 
-        existingEmployee.setName(updatedEmployee.getName());
-        existingEmployee.setEmail(updatedEmployee.getEmail());
-        existingEmployee.setDepartment(updatedEmployee.getDepartment());
-        existingEmployee.setSalary(updatedEmployee.getSalary());
+        Department department =
+                departmentRepository.findById(
+                        dto.getDepartmentId()
+                ).orElseThrow(() ->
+                        new RuntimeException(
+                                "Department not found"
+                        ));
 
-        return employeeRepository.save(existingEmployee);
+        existingEmployee.setName(dto.getName());
+        existingEmployee.setEmail(dto.getEmail());
+        existingEmployee.setSalary(dto.getSalary());
+        existingEmployee.setDepartment(department);
+
+        Employee updatedEmployee =
+                employeeRepository.save(existingEmployee);
+
+        return convertToResponseDTO(updatedEmployee);
     }
 
+    // =========================
     // DELETE
+    // =========================
+
     public boolean deleteEmployee(int id) {
 
         if (!employeeRepository.existsById(id)) {
@@ -57,34 +163,99 @@ public class EmployeeService {
         }
 
         employeeRepository.deleteById(id);
+
         return true;
     }
 
+    // =========================
     // FIND BY EMAIL
-    public Employee getEmployeeByEmail(String email) {
-        return employeeRepository.findByEmail(email).orElse(null);
+    // Entity → DTO
+    // =========================
+
+    public EmployeeResponseDTO getEmployeeByEmail(
+            String email) {
+
+        Employee employee =
+                employeeRepository.findByEmail(email)
+                        .orElse(null);
+
+        if (employee == null) {
+            return null;
+        }
+
+        return convertToResponseDTO(employee);
     }
 
-    // FIND BY DEPARTMENT ID
-    public List<Employee> getEmployeesByDepartmentId(Integer departmentId) {
-        return employeeRepository.findByDepartmentId(departmentId);
+    // =========================
+    // FIND BY DEPARTMENT
+    // Entity → DTO
+    // =========================
+
+    public List<EmployeeResponseDTO>
+    getEmployeesByDepartmentId(Integer departmentId) {
+
+        return employeeRepository
+                .findByDepartmentId(departmentId)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
-    // FIND BY SALARY
-    public List<Employee> getEmployeesBySalaryGreaterThan(double salary) {
-        return employeeRepository.findBySalaryGreaterThan(salary);
+    // =========================
+    // DERIVED QUERY
+    // Entity → DTO
+    // =========================
+
+    public List<EmployeeResponseDTO>
+    getEmployeesBySalaryGreaterThan(double salary) {
+
+        return employeeRepository
+                .findBySalaryGreaterThan(salary)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
-    // CUSTOM JPQL QUERY
-    public List<Employee> getHighSalaryEmployees(double salary) {
-        return employeeRepository.findHighSalaryEmployees(salary);
+    // =========================
+    // JPQL
+    // Entity → DTO
+    // =========================
+
+    public List<EmployeeResponseDTO>
+    getHighSalaryEmployees(double salary) {
+
+        return employeeRepository
+                .findHighSalaryEmployees(salary)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
-    public List<Employee> getHighSalaryNative(double salary) {
-        return employeeRepository.findHighSalaryNative(salary);
+    // =========================
+    // NATIVE QUERY
+    // Entity → DTO
+    // =========================
+
+    public List<EmployeeResponseDTO>
+    getHighSalaryNative(double salary) {
+
+        return employeeRepository
+                .findHighSalaryNative(salary)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
     }
 
-    public Page<Employee> getAllEmployees(Pageable pageable) {
-        return employeeRepository.findAll(pageable);
+    // =========================
+    // PAGINATION + SORTING
+    // Entity → DTO
+    // =========================
+
+    public Page<EmployeeResponseDTO>
+    getAllEmployees(Pageable pageable) {
+
+        return employeeRepository
+                .findAll(pageable)
+                .map(this::convertToResponseDTO);
     }
 }

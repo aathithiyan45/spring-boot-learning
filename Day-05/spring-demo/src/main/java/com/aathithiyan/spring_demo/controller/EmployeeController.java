@@ -1,16 +1,16 @@
 package com.aathithiyan.spring_demo.controller;
 
-import com.aathithiyan.spring_demo.model.Employee;
+import com.aathithiyan.spring_demo.dto.EmployeeRequestDTO;
+import com.aathithiyan.spring_demo.dto.EmployeeResponseDTO;
 import com.aathithiyan.spring_demo.service.EmployeeService;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 
 @RestController
 @RequestMapping("/employees")
@@ -22,31 +22,45 @@ public class EmployeeController {
         this.employeeService = employeeService;
     }
 
+    // =========================
     // CREATE
-    @PostMapping
-    public ResponseEntity<Employee> createEmployee(
-            @RequestBody Employee employee) {
+    // Request DTO → Entity
+    // Entity → Response DTO
+    // =========================
 
-        Employee newEmployee =
-                employeeService.createEmployee(employee);
+    @PostMapping
+    public ResponseEntity<EmployeeResponseDTO> createEmployee(
+            @RequestBody EmployeeRequestDTO dto) {
+
+        EmployeeResponseDTO response =
+                employeeService.createEmployee(dto);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(newEmployee);
+                .body(response);
     }
 
+    // =========================
     // GET ALL
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping
-    public List<Employee> getAllEmployees() {
+    public List<EmployeeResponseDTO> getAllEmployees() {
+
         return employeeService.getAllEmployees();
     }
 
+    // =========================
     // GET BY ID
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/{id}")
-    public ResponseEntity<Employee> getEmployeeById(
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeById(
             @PathVariable int id) {
 
-        Employee employee =
+        EmployeeResponseDTO employee =
                 employeeService.getEmployeeById(id);
 
         if (employee == null) {
@@ -56,14 +70,19 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
+    // =========================
     // UPDATE
-    @PutMapping("/{id}")
-    public ResponseEntity<Employee> updateEmployee(
-            @PathVariable int id,
-            @RequestBody Employee employee) {
+    // Request DTO → Entity
+    // Entity → Response DTO
+    // =========================
 
-        Employee updatedEmployee =
-                employeeService.updateEmployee(id, employee);
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeResponseDTO> updateEmployee(
+            @PathVariable int id,
+            @RequestBody EmployeeRequestDTO dto) {
+
+        EmployeeResponseDTO updatedEmployee =
+                employeeService.updateEmployee(id, dto);
 
         if (updatedEmployee == null) {
             return ResponseEntity.notFound().build();
@@ -72,7 +91,10 @@ public class EmployeeController {
         return ResponseEntity.ok(updatedEmployee);
     }
 
+    // =========================
     // DELETE
+    // =========================
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteEmployee(
             @PathVariable int id) {
@@ -87,12 +109,16 @@ public class EmployeeController {
         return ResponseEntity.noContent().build();
     }
 
+    // =========================
     // FIND BY EMAIL
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/email/{email}")
-    public ResponseEntity<Employee> getEmployeeByEmail(
+    public ResponseEntity<EmployeeResponseDTO> getEmployeeByEmail(
             @PathVariable String email) {
 
-        Employee employee =
+        EmployeeResponseDTO employee =
                 employeeService.getEmployeeByEmail(email);
 
         if (employee == null) {
@@ -102,42 +128,68 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
-    // FIND BY DEPARTMENT ID
+    // =========================
+    // FIND BY DEPARTMENT
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/department/{departmentId}")
-    public List<Employee> getEmployeesByDepartment(
+    public List<EmployeeResponseDTO> getEmployeesByDepartment(
             @PathVariable Integer departmentId) {
 
         return employeeService
                 .getEmployeesByDepartmentId(departmentId);
     }
 
+    // =========================
     // DERIVED QUERY
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/salary/greater-than/{salary}")
-    public List<Employee> getEmployeesBySalaryGreaterThan(
+    public List<EmployeeResponseDTO> getEmployeesBySalaryGreaterThan(
             @PathVariable double salary) {
 
         return employeeService
                 .getEmployeesBySalaryGreaterThan(salary);
     }
 
-    // CUSTOM JPQL QUERY
+    // =========================
+    // JPQL
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/salary/high/{salary}")
-    public List<Employee> getHighSalaryEmployees(
+    public List<EmployeeResponseDTO> getHighSalaryEmployees(
             @PathVariable double salary) {
 
         return employeeService
                 .getHighSalaryEmployees(salary);
     }
 
+    // =========================
+    // NATIVE QUERY
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/salary/native/{salary}")
-    public List<Employee> getHighSalaryNative(
+    public List<EmployeeResponseDTO> getHighSalaryNative(
             @PathVariable double salary) {
 
-        return employeeService.getHighSalaryNative(salary);
+        return employeeService
+                .getHighSalaryNative(salary);
     }
 
+    // =========================
+    // PAGINATION + SORTING
+    // Entity → Response DTO
+    // =========================
+
     @GetMapping("/page")
-    public Page<Employee> getEmployees(Pageable pageable) {
-        return employeeService.getAllEmployees(pageable);
+    public Page<EmployeeResponseDTO> getEmployees(
+            Pageable pageable) {
+
+        return employeeService
+                .getAllEmployees(pageable);
     }
 }
