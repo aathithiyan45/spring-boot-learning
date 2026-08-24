@@ -3,6 +3,8 @@ package com.aathithiyan.spring_demo.service;
 import com.aathithiyan.spring_demo.model.Employee;
 import com.aathithiyan.spring_demo.repository.EmployeeRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -76,5 +78,13 @@ public class EmployeeService {
     // CUSTOM JPQL QUERY
     public List<Employee> getHighSalaryEmployees(double salary) {
         return employeeRepository.findHighSalaryEmployees(salary);
+    }
+
+    public List<Employee> getHighSalaryNative(double salary) {
+        return employeeRepository.findHighSalaryNative(salary);
+    }
+
+    public Page<Employee> getAllEmployees(Pageable pageable) {
+        return employeeRepository.findAll(pageable);
     }
 }

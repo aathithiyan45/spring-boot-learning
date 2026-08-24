@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+
 @RestController
 @RequestMapping("/employees")
 public class EmployeeController {
@@ -124,5 +127,17 @@ public class EmployeeController {
 
         return employeeService
                 .getHighSalaryEmployees(salary);
+    }
+
+    @GetMapping("/salary/native/{salary}")
+    public List<Employee> getHighSalaryNative(
+            @PathVariable double salary) {
+
+        return employeeService.getHighSalaryNative(salary);
+    }
+
+    @GetMapping("/page")
+    public Page<Employee> getEmployees(Pageable pageable) {
+        return employeeService.getAllEmployees(pageable);
     }
 }
