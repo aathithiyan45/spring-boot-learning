@@ -84,11 +84,13 @@ public class EmployeeController {
         return ResponseEntity.noContent().build();
     }
 
+    // FIND BY EMAIL
     @GetMapping("/email/{email}")
     public ResponseEntity<Employee> getEmployeeByEmail(
             @PathVariable String email) {
 
-        Employee employee = employeeService.getEmployeeByEmail(email);
+        Employee employee =
+                employeeService.getEmployeeByEmail(email);
 
         if (employee == null) {
             return ResponseEntity.notFound().build();
@@ -97,17 +99,30 @@ public class EmployeeController {
         return ResponseEntity.ok(employee);
     }
 
-    @GetMapping("/department/{department}")
+    // FIND BY DEPARTMENT ID
+    @GetMapping("/department/{departmentId}")
     public List<Employee> getEmployeesByDepartment(
-            @PathVariable String department) {
+            @PathVariable Integer departmentId) {
 
-        return employeeService.getEmployeesByDepartment(department);
+        return employeeService
+                .getEmployeesByDepartmentId(departmentId);
     }
 
+    // DERIVED QUERY
     @GetMapping("/salary/greater-than/{salary}")
     public List<Employee> getEmployeesBySalaryGreaterThan(
             @PathVariable double salary) {
 
-        return employeeService.getEmployeesBySalaryGreaterThan(salary);
+        return employeeService
+                .getEmployeesBySalaryGreaterThan(salary);
+    }
+
+    // CUSTOM JPQL QUERY
+    @GetMapping("/salary/high/{salary}")
+    public List<Employee> getHighSalaryEmployees(
+            @PathVariable double salary) {
+
+        return employeeService
+                .getHighSalaryEmployees(salary);
     }
 }

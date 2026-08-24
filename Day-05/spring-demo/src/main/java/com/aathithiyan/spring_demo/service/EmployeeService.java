@@ -15,22 +15,22 @@ public class EmployeeService {
         this.employeeRepository = employeeRepository;
     }
 
-    // Create Employee
+    // CREATE
     public Employee createEmployee(Employee employee) {
         return employeeRepository.save(employee);
     }
 
-    // Get All Employees
+    // GET ALL
     public List<Employee> getAllEmployees() {
         return employeeRepository.findAll();
     }
 
-    // Get Employee By ID
+    // GET BY ID
     public Employee getEmployeeById(int id) {
         return employeeRepository.findById(id).orElse(null);
     }
 
-    // Update Employee
+    // UPDATE
     public Employee updateEmployee(int id, Employee updatedEmployee) {
 
         Employee existingEmployee = getEmployeeById(id);
@@ -47,7 +47,7 @@ public class EmployeeService {
         return employeeRepository.save(existingEmployee);
     }
 
-    // Delete Employee
+    // DELETE
     public boolean deleteEmployee(int id) {
 
         if (!employeeRepository.existsById(id)) {
@@ -57,15 +57,24 @@ public class EmployeeService {
         employeeRepository.deleteById(id);
         return true;
     }
+
+    // FIND BY EMAIL
     public Employee getEmployeeByEmail(String email) {
         return employeeRepository.findByEmail(email).orElse(null);
     }
 
-    public List<Employee> getEmployeesByDepartment(String department) {
-        return employeeRepository.findByDepartment(department);
+    // FIND BY DEPARTMENT ID
+    public List<Employee> getEmployeesByDepartmentId(Integer departmentId) {
+        return employeeRepository.findByDepartmentId(departmentId);
     }
 
+    // FIND BY SALARY
     public List<Employee> getEmployeesBySalaryGreaterThan(double salary) {
         return employeeRepository.findBySalaryGreaterThan(salary);
+    }
+
+    // CUSTOM JPQL QUERY
+    public List<Employee> getHighSalaryEmployees(double salary) {
+        return employeeRepository.findHighSalaryEmployees(salary);
     }
 }
