@@ -12,6 +12,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import com.aathithiyan.spring_demo.exception.EmployeeNotFoundException;
 
 @Service
 public class EmployeeService {
@@ -107,11 +108,10 @@ public class EmployeeService {
 
         Employee employee =
                 employeeRepository.findById(id)
-                        .orElse(null);
-
-        if (employee == null) {
-            return null;
-        }
+                        .orElseThrow(() ->
+                                new EmployeeNotFoundException(
+                                        "Employee not found with id: " + id
+                                ));
 
         return convertToResponseDTO(employee);
     }
