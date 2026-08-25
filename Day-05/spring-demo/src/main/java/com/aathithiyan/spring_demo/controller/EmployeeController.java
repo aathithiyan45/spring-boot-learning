@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/employees")
@@ -30,7 +31,7 @@ public class EmployeeController {
 
     @PostMapping
     public ResponseEntity<EmployeeResponseDTO> createEmployee(
-            @RequestBody EmployeeRequestDTO dto) {
+            @Valid @RequestBody EmployeeRequestDTO dto) {
 
         EmployeeResponseDTO response =
                 employeeService.createEmployee(dto);
