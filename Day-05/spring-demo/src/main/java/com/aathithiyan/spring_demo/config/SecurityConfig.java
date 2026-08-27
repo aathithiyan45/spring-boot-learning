@@ -48,7 +48,7 @@ public class SecurityConfig {
                         // Registration is public
                         .requestMatchers(
                                 HttpMethod.POST,
-                                "/users/register"
+                                "/auth/register"
                         ).permitAll()
 
                         // Login is public
