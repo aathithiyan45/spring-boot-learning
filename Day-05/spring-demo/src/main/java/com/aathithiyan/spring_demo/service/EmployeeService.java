@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import com.aathithiyan.spring_demo.exception.EmployeeNotFoundException;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class EmployeeService {
@@ -257,5 +258,26 @@ public class EmployeeService {
         return employeeRepository
                 .findAll(pageable)
                 .map(this::convertToResponseDTO);
+    }
+
+    @Transactional
+    public void createEmployeeWithRollbackTest() {
+
+        Department department =
+                departmentRepository.findById(1)
+                        .orElseThrow(() ->
+                                new RuntimeException("Department not found"));
+
+        Employee employee = new Employee();
+
+        employee.setName("Rollback Employee");
+        employee.setEmail("rollback@test.com");
+        employee.setSalary(60000);
+        employee.setDepartment(department);
+
+        employeeRepository.save(employee);
+
+        // Intentional failure
+        throw new RuntimeException("Intentional failure - testing rollback");
     }
 }

@@ -193,4 +193,22 @@ public class EmployeeController {
         return employeeService
                 .getAllEmployees(pageable);
     }
+
+    @GetMapping("/transaction-test")
+    public ResponseEntity<String> transactionTest() {
+
+        try {
+            employeeService.createEmployeeWithRollbackTest();
+
+            return ResponseEntity.ok(
+                    "Transaction completed successfully"
+            );
+
+        } catch (RuntimeException e) {
+
+            return ResponseEntity.ok(
+                    "Transaction failed and rolled back"
+            );
+        }
+    }
 }
