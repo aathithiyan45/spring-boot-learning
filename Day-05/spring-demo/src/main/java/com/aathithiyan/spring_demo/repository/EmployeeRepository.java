@@ -4,6 +4,7 @@ import com.aathithiyan.spring_demo.model.Employee;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -11,7 +12,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeRepository
-        extends JpaRepository<Employee, Integer> {
+        extends JpaRepository<Employee, Integer>,
+        JpaSpecificationExecutor<Employee> {
 
     Optional<Employee> findByEmail(String email);
 
@@ -33,4 +35,11 @@ public interface EmployeeRepository
     );
 
     Page<Employee> findAll(Pageable pageable);
+
+    List<Employee> findByNameContainingIgnoreCase(String name);
+
+    List<Employee> findBySalaryBetween(
+            double minSalary,
+            double maxSalary
+    );
 }

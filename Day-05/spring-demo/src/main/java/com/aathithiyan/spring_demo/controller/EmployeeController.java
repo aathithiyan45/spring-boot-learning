@@ -211,4 +211,34 @@ public class EmployeeController {
             );
         }
     }
+    @GetMapping("/search")
+    public List<EmployeeResponseDTO> searchEmployees(
+            @RequestParam String name) {
+
+        return employeeService.searchEmployeesByName(name);
+    }
+
+    @GetMapping("/filter/salary")
+    public List<EmployeeResponseDTO> getEmployeesBySalaryRange(
+            @RequestParam double min,
+            @RequestParam double max) {
+
+        return employeeService
+                .getEmployeesBySalaryRange(min, max);
+    }
+
+    @GetMapping("/filter")
+    public List<EmployeeResponseDTO> filterEmployees(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Integer departmentId,
+            @RequestParam(required = false) Double minSalary,
+            @RequestParam(required = false) Double maxSalary) {
+
+        return employeeService.filterEmployees(
+                name,
+                departmentId,
+                minSalary,
+                maxSalary
+        );
+    }
 }

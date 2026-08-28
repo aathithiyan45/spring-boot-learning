@@ -15,6 +15,9 @@ import java.util.List;
 import com.aathithiyan.spring_demo.exception.EmployeeNotFoundException;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.aathithiyan.spring_demo.specification.EmployeeSpecification;
+import org.springframework.data.jpa.domain.Specification;
+
 @Service
 public class EmployeeService {
 
@@ -279,5 +282,49 @@ public class EmployeeService {
 
         // Intentional failure
         throw new RuntimeException("Intentional failure - testing rollback");
+
+
     }
+
+    public List<EmployeeResponseDTO> searchEmployeesByName(String name) {
+
+        return employeeRepository
+                .findByNameContainingIgnoreCase(name)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+    public List<EmployeeResponseDTO> getEmployeesBySalaryRange(
+            double minSalary,
+            double maxSalary) {
+
+        return employeeRepository
+                .findBySalaryBetween(minSalary, maxSalary)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
+    public List<EmployeeResponseDTO> filterEmployees(
+            String name,
+            Integer departmentId,
+            Double minSalary,
+            Double maxSalary) {
+
+        Specification<Employee> specification =
+                Specification.allOf(
+                        EmployeeSpecification.hasName(name),
+                        EmployeeSpecification.hasDepartmentId(departmentId),
+                        EmployeeSpecification.salaryGreaterThanOrEqual(minSalary),
+                        EmployeeSpecification.salaryLessThanOrEqual(maxSalary)
+                );
+
+        return employeeRepository
+                .findAll(specification)
+                .stream()
+                .map(this::convertToResponseDTO)
+                .toList();
+    }
+
 }
