@@ -18,11 +18,17 @@ import org.springframework.transaction.annotation.Transactional;
 import com.aathithiyan.spring_demo.specification.EmployeeSpecification;
 import org.springframework.data.jpa.domain.Specification;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 @Service
 public class EmployeeService {
 
     private final EmployeeRepository employeeRepository;
     private final DepartmentRepository departmentRepository;
+
+    private static final Logger log =
+            LoggerFactory.getLogger(EmployeeService.class);
 
     public EmployeeService(
             EmployeeRepository employeeRepository,
@@ -82,10 +88,15 @@ public class EmployeeService {
     public EmployeeResponseDTO createEmployee(
             EmployeeRequestDTO dto) {
 
+        log.info("Creating employee with email: {}", dto.getEmail());
+
         Employee employee = convertToEntity(dto);
 
         Employee savedEmployee =
                 employeeRepository.save(employee);
+
+        log.info("Employee created successfully with id: {}",
+                savedEmployee.getId());
 
         return convertToResponseDTO(savedEmployee);
     }
@@ -110,12 +121,19 @@ public class EmployeeService {
 
     public EmployeeResponseDTO getEmployeeById(int id) {
 
+        log.debug("Searching employee with id: {}", id);
+
+        log.info("Fetching employee with id: {}", id);
+
         Employee employee =
                 employeeRepository.findById(id)
-                        .orElseThrow(() ->
-                                new EmployeeNotFoundException(
-                                        "Employee not found with id: " + id
-                                ));
+                        .orElseThrow(() -> {
+                            log.warn("Employee with id {} not found", id);
+
+                            return new EmployeeNotFoundException(
+                                    "Employee not found with id: " + id
+                            );
+                        });
 
         return convertToResponseDTO(employee);
     }
@@ -281,7 +299,16 @@ public class EmployeeService {
         employeeRepository.save(employee);
 
         // Intentional failure
-        throw new RuntimeException("Intentional failure - testing rollback");
+        try {
+            throw new RuntimeException(
+                    "Intentional failure - testing rollback"
+            );
+        } catch (RuntimeException e) {
+
+            log.error("Transaction failed during rollback test", e);
+
+            throw e;
+        }
 
 
     }

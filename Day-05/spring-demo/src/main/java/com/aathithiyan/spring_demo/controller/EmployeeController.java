@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 import jakarta.validation.Valid;
 
 @RestController
@@ -25,8 +26,6 @@ public class EmployeeController {
 
     // =========================
     // CREATE
-    // Request DTO → Entity
-    // Entity → Response DTO
     // =========================
 
     @PostMapping
@@ -43,7 +42,6 @@ public class EmployeeController {
 
     // =========================
     // GET ALL
-    // Entity → Response DTO
     // =========================
 
     @GetMapping
@@ -54,7 +52,6 @@ public class EmployeeController {
 
     // =========================
     // GET BY ID
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/{id}")
@@ -73,14 +70,12 @@ public class EmployeeController {
 
     // =========================
     // UPDATE
-    // Request DTO → Entity
-    // Entity → Response DTO
     // =========================
 
     @PutMapping("/{id}")
     public ResponseEntity<EmployeeResponseDTO> updateEmployee(
             @PathVariable int id,
-            @RequestBody EmployeeRequestDTO dto) {
+            @Valid @RequestBody EmployeeRequestDTO dto) {
 
         EmployeeResponseDTO updatedEmployee =
                 employeeService.updateEmployee(id, dto);
@@ -112,7 +107,6 @@ public class EmployeeController {
 
     // =========================
     // FIND BY EMAIL
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/email/{email}")
@@ -131,7 +125,6 @@ public class EmployeeController {
 
     // =========================
     // FIND BY DEPARTMENT
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/department/{departmentId}")
@@ -144,7 +137,6 @@ public class EmployeeController {
 
     // =========================
     // DERIVED QUERY
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/salary/greater-than/{salary}")
@@ -157,7 +149,6 @@ public class EmployeeController {
 
     // =========================
     // JPQL
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/salary/high/{salary}")
@@ -170,7 +161,6 @@ public class EmployeeController {
 
     // =========================
     // NATIVE QUERY
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/salary/native/{salary}")
@@ -183,7 +173,6 @@ public class EmployeeController {
 
     // =========================
     // PAGINATION + SORTING
-    // Entity → Response DTO
     // =========================
 
     @GetMapping("/page")
@@ -194,10 +183,15 @@ public class EmployeeController {
                 .getAllEmployees(pageable);
     }
 
+    // =========================
+    // TRANSACTION TEST
+    // =========================
+
     @GetMapping("/transaction-test")
     public ResponseEntity<String> transactionTest() {
 
         try {
+
             employeeService.createEmployeeWithRollbackTest();
 
             return ResponseEntity.ok(
@@ -211,12 +205,22 @@ public class EmployeeController {
             );
         }
     }
+
+    // =========================
+    // SEARCH BY NAME
+    // =========================
+
     @GetMapping("/search")
     public List<EmployeeResponseDTO> searchEmployees(
             @RequestParam String name) {
 
-        return employeeService.searchEmployeesByName(name);
+        return employeeService
+                .searchEmployeesByName(name);
     }
+
+    // =========================
+    // SALARY RANGE
+    // =========================
 
     @GetMapping("/filter/salary")
     public List<EmployeeResponseDTO> getEmployeesBySalaryRange(
@@ -226,6 +230,10 @@ public class EmployeeController {
         return employeeService
                 .getEmployeesBySalaryRange(min, max);
     }
+
+    // =========================
+    // DYNAMIC FILTER
+    // =========================
 
     @GetMapping("/filter")
     public List<EmployeeResponseDTO> filterEmployees(
