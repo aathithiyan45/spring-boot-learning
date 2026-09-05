@@ -38,7 +38,7 @@ class EmployeeControllerTest {
                         1,
                         "Aathithiyan",
                         "aathithiyan@gmail.com",
-                        50000,
+                        50000.0,
                         "IT"
                 );
 
